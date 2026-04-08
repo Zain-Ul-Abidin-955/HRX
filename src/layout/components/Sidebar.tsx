@@ -27,23 +27,88 @@ interface SidebarItem {
 
 const SIDEBAR_BY_ROLE: Record<AppRole, SidebarItem[]> = {
   admin: [
-    { name: "Dashboard", icon: <DashboardOutlined />, link: "/admin/dashboard", paths: ["/admin/dashboard", "/admin"] },
-    { name: "Organizations", icon: <BankOutlined />, link: "/admin/organization", paths: ["/admin/organization"] },
-    { name: "Settings", icon: <SettingOutlined />, link: "/admin/settings", paths: ["/admin/settings"] },
+    {
+      name: "Dashboard",
+      icon: <DashboardOutlined />,
+      link: "/admin/dashboard",
+      paths: ["/admin/dashboard", "/admin"],
+    },
+    {
+      name: "Organizations",
+      icon: <BankOutlined />,
+      link: "/admin/organization",
+      paths: ["/admin/organization"],
+    },
+    {
+      name: "Settings",
+      icon: <SettingOutlined />,
+      link: "/admin/settings",
+      paths: ["/admin/settings"],
+    },
   ],
   organization: [
-    { name: "Dashboard", icon: <DashboardOutlined />, link: "/orgnization/dashboard", paths: ["/orgnization/dashboard", "/orgnization"] },
-    { name: "Employees", icon: <TeamOutlined />, link: "/orgnization/employees", paths: ["/orgnization/employees"] },
-    { name: "Recruitment", icon: <UserAddOutlined />, link: "/orgnization/recruitment", paths: ["/orgnization/recruitment"] },
-    { name: "Attendance", icon: <CalendarOutlined />, link: "/orgnization/attendance", paths: ["/orgnization/attendance"] },
-    { name: "AI Assistant", icon: <RobotOutlined />, link: "/orgnization/chat-bot", paths: ["/orgnization/chat-bot"] },
-    { name: "Reports", icon: <FileTextOutlined />, link: "/orgnization/reports", paths: ["/orgnization/reports"] },
-    { name: "Settings", icon: <SettingOutlined />, link: "/orgnization/settings", paths: ["/orgnization/settings"] },
+    {
+      name: "Dashboard",
+      icon: <DashboardOutlined />,
+      link: "/orgnization/dashboard",
+      paths: ["/orgnization/dashboard", "/orgnization"],
+    },
+    {
+      name: "Employees",
+      icon: <TeamOutlined />,
+      link: "/orgnization/employees",
+      paths: ["/orgnization/employees"],
+    },
+    {
+      name: "Recruitment",
+      icon: <UserAddOutlined />,
+      link: "/orgnization/recruitment",
+      paths: ["/orgnization/recruitment"],
+    },
+    {
+      name: "Attendance",
+      icon: <CalendarOutlined />,
+      link: "/orgnization/attendance",
+      paths: ["/orgnization/attendance"],
+    },
+    {
+      name: "AI Assistant",
+      icon: <RobotOutlined />,
+      link: "/orgnization/chat-bot",
+      paths: ["/orgnization/chat-bot"],
+    },
+    {
+      name: "Reports",
+      icon: <FileTextOutlined />,
+      link: "/orgnization/reports",
+      paths: ["/orgnization/reports"],
+    },
+    {
+      name: "Settings",
+      icon: <SettingOutlined />,
+      link: "/orgnization/settings",
+      paths: ["/orgnization/settings"],
+    },
   ],
   employee: [
-    { name: "Dashboard", icon: <DashboardOutlined />, link: "/employee/dashboard", paths: ["/employee/dashboard", "/employee"] },
-    { name: "My Profile", icon: <UserOutlined />, link: "/employee/profile", paths: ["/employee/profile"] },
-    { name: "Settings", icon: <SettingOutlined />, link: "/employee/settings", paths: ["/employee/settings"] },
+    {
+      name: "Dashboard",
+      icon: <DashboardOutlined />,
+      link: "/employee/dashboard",
+      paths: ["/employee/dashboard", "/employee"],
+    },
+    {
+      name: "My Profile",
+      icon: <UserOutlined />,
+      link: "/employee/profile",
+      paths: ["/employee/profile"],
+    },
+    {
+      name: "Settings",
+      icon: <SettingOutlined />,
+      link: "/employee/settings",
+      paths: ["/employee/settings"],
+    },
   ],
 };
 
@@ -76,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     localStorage.clear();
     // Close modal
     setIsLogoutModalOpen(false);
-    
+
     // Navigate to home/login page
     router.push("/");
   };
@@ -135,9 +200,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                     isCollapsed
                       ? "justify-center px-3 py-3"
                       : "space-x-3 px-4 py-3"
-                  } ${isActiveRoute(item)
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                  } ${
+                    isActiveRoute(item)
+                      ? "!bg-primaryColor !text-white shadow-md"
+                      : "!text-gray-700 hover:!bg-gray-100 hover:!text-primaryColor"
                   }`}
                 >
                   {linkContent(item)}
@@ -160,7 +226,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <button
             onClick={showLogoutModal}
-            className={`w-full flex items-center rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200 ${
+            className={`w-full flex items-center rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200 ${
               isCollapsed ? "justify-center px-3 py-3" : "space-x-3 px-4 py-3"
             }`}
           >

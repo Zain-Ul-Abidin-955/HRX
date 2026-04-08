@@ -3,6 +3,7 @@ import React from "react";
 import { Form, Input, Button, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface LoginFormValues {
   email: string;
@@ -73,7 +74,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="w-[70%] mx-auto">
+    <div className="w-full max-w-[500px] mx-auto px-4 sm:px-6 lg:px-0">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
         <p className="text-gray-600">Sign in to your account</p>
@@ -122,9 +123,12 @@ const Login: React.FC = () => {
         <Form.Item name="remember" valuePropName="checked" className="mb-4">
           <div className="flex items-center justify-between">
             <Checkbox className="text-gray-600">Remember me</Checkbox>
-            <a href="#" className="!text-primaryColor hover:text-primaryColor/80 text-sm">
+            <Link
+              href="/auth/forgot-password"
+              className="!text-primaryColor hover:text-primaryColor/80 text-sm"
+            >
               Forgot password?
-            </a>
+            </Link>
           </div>
         </Form.Item>
 
@@ -144,12 +148,12 @@ const Login: React.FC = () => {
       <div className="mt-6 text-center">
         <p className="text-gray-600">
           Don&apos;t have an account?{" "}
-          <a
+          <Link
             href="/auth/signup"
             className="text-blue-600 hover:text-blue-700 font-medium"
           >
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
 

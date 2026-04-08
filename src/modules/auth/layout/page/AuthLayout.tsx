@@ -6,12 +6,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen">
       {/* Left Section */}
-      <div className="w-[50%] my-auto">
+      <div className="w-full md:w-[50%] my-auto">
         {children}
       </div>
 
       {/* Right Section - HRX branding */}
-      <div className="relative flex w-[50%] h-screen min-h-0 flex-col items-center justify-center text-white bg-primaryColor overflow-hidden">
+      <div className="relative hidden md:flex w-[50%] h-screen min-h-0 flex-col items-center justify-center text-white bg-primaryColor overflow-hidden">
         {/* Subtle grid pattern */}
         <div className="absolute" />
         <div className="relative flex flex-col items-center gap-6 px-8 text-center">

@@ -19,7 +19,7 @@ const Employees: React.FC = () => {
       key: "name",
       render: (text: string, record: any) => (
         <div className="flex items-center space-x-3">
-          <Avatar size={40} icon={<UserOutlined />} src={record.avatar} />
+          <Avatar size={40} icon={<UserOutlined />} src={record.avatar} className="!mr-2" />
           <div>
             <p className="font-semibold text-gray-800">{text}</p>
             <p className="text-xs text-gray-500">{record.employeeId}</p>
@@ -196,7 +196,7 @@ const Employees: React.FC = () => {
               prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="w-64"
+              className="!w-[340px] !ml-4"
             />
           </div>
         }

@@ -50,7 +50,7 @@ const Attendance: React.FC = () => {
       key: "name",
       render: (text: string, record: any) => (
         <div className="flex items-center space-x-3">
-          <Avatar size={40} icon={<UserOutlined />} />
+          <Avatar size={40} icon={<UserOutlined />} className="!mr-2" />
           <div>
             <p className="font-semibold text-gray-800">{text}</p>
             <p className="text-xs text-gray-500">{record.employeeId}</p>
@@ -240,7 +240,7 @@ const Attendance: React.FC = () => {
       </Row>
 
       {/* AI Insights */}
-      <Card className="bg-linear-to-r from-blue-50 to-purple-50 border-blue-200">
+      {/* <Card className="bg-linear-to-r from-blue-50 to-purple-50 border-blue-200">
         <div className="flex items-start space-x-4">
           <div className="bg-blue-100 p-4 rounded-full">
             <RobotOutlined className="text-3xl text-blue-600" />
@@ -271,7 +271,7 @@ const Attendance: React.FC = () => {
             </ul>
           </div>
         </div>
-      </Card>
+      </Card> */}
     </div>
   );
 };
