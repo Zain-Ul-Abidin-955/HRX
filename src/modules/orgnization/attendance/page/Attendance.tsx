@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Row, Col, Table, Button, Tag, Avatar, Calendar } from "antd";
+import { Card, Row, Col, Table, Button, Tag, Avatar } from "antd";
 import {
   CalendarOutlined,
   CheckCircleOutlined,
@@ -9,7 +9,6 @@ import {
   UserOutlined,
   RobotOutlined,
 } from "@ant-design/icons";
-import type { Dayjs } from "dayjs";
 
 const Attendance: React.FC = () => {
   const stats = [
@@ -69,7 +68,11 @@ const Attendance: React.FC = () => {
       dataIndex: "checkIn",
       key: "checkIn",
       render: (time: string) => (
-        <span className="text-gray-700 font-medium">{time}</span>
+        time && time !== "-" ? (
+          <span className="text-gray-700 font-medium">{time}</span>
+        ) : (
+          <Tag color="red">Missing</Tag>
+        )
       ),
     },
     {
@@ -77,7 +80,11 @@ const Attendance: React.FC = () => {
       dataIndex: "checkOut",
       key: "checkOut",
       render: (time: string) => (
-        <span className="text-gray-700 font-medium">{time || "-"}</span>
+        time && time !== "-" ? (
+          <span className="text-gray-700 font-medium">{time}</span>
+        ) : (
+          <Tag color="red">Missing</Tag>
+        )
       ),
     },
     {
@@ -161,11 +168,27 @@ const Attendance: React.FC = () => {
       workingHours: "-",
       status: "Absent",
     },
+    {
+      key: "6",
+      name: "Ava Martin",
+      employeeId: "EMP-006",
+      department: "Design",
+      checkIn: "09:20 AM",
+      checkOut: "-",
+      workingHours: "-",
+      status: "Present",
+    },
+    {
+      key: "7",
+      name: "Noah Brown",
+      employeeId: "EMP-007",
+      department: "Operations",
+      checkIn: "-",
+      checkOut: "06:05 PM",
+      workingHours: "-",
+      status: "Late",
+    },
   ];
-
-  const onCalendarSelect = (value: Dayjs) => {
-    console.log("Selected date:", value.format("YYYY-MM-DD"));
-  };
 
   return (
     <div className="space-y-6">
@@ -212,7 +235,7 @@ const Attendance: React.FC = () => {
       {/* Main Content */}
       <Row gutter={[16, 16]}>
         {/* Attendance Table */}
-        <Col xs={24} lg={16}>
+        <Col xs={24}>
           <Card
             title={
               <span className="text-lg font-semibold">Today&apos;s Attendance</span>
@@ -223,17 +246,6 @@ const Attendance: React.FC = () => {
               dataSource={attendanceData}
               pagination={false}
               scroll={{ x: 900 }}
-            />
-          </Card>
-        </Col>
-
-        {/* Calendar */}
-        <Col xs={24} lg={8}>
-          <Card title={<span className="text-lg font-semibold">Calendar</span>}>
-            <Calendar
-              fullscreen={false}
-              onSelect={onCalendarSelect}
-              className="attendance-calendar"
             />
           </Card>
         </Col>
