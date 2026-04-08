@@ -179,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Search Bar */}
-          <div className="hidden md:block w-full max-w-md">
+          {/* <div className="hidden md:block w-full max-w-md">
             <Input
               placeholder="Search employees, documents, tasks..."
               prefix={<SearchOutlined className="text-gray-400" />}
@@ -188,7 +188,7 @@ const Header: React.FC<HeaderProps> = ({
               size="large"
               className="rounded-lg"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Right Section - Actions & Profile */}

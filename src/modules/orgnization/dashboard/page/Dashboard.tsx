@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
       key: "employee",
       render: (text: string, record: any) => (
         <div className="flex items-center space-x-3">
-          <Avatar icon={<UserOutlined />} />
+          <Avatar icon={<UserOutlined />} className="!mr-2" />
           <div>
             <p className="font-medium text-gray-800">{text}</p>
             <p className="text-xs text-gray-500">{record.department}</p>
@@ -199,7 +199,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-linear-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+      <div className="bg-primaryColor rounded-2xl p-8 text-white">
         <h1 className="text-3xl font-bold mb-2">
           Welcome back, HR Manager! 👋
         </h1>
@@ -301,11 +301,11 @@ const Dashboard: React.FC = () => {
               {recentActivities.map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-start space-x-3  p-3 hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <Avatar
                     icon={<UserOutlined />}
-                    className="bg-blue-500 shrink-0"
+                    className="bg-blue-500 shrink-0 !mr-2"
                   />
                   <div className="flex-1">
                     <p className="text-sm">
@@ -392,7 +392,7 @@ const Dashboard: React.FC = () => {
       </Card>
 
       {/* Quick Actions */}
-      <Card title="Quick Actions">
+      {/* <Card title="Quick Actions">
         <Row gutter={[16, 16]}>
           <Col xs={12} sm={6}>
             <Button
@@ -439,7 +439,7 @@ const Dashboard: React.FC = () => {
             </Button>
           </Col>
         </Row>
-      </Card>
+      </Card> */}
     </div>
   );
 };
