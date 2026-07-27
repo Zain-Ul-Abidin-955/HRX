@@ -14,6 +14,14 @@ export const userLogin = async (formData: LoginPayload): Promise<LoginResponse> 
   return response.data;
 };
 
+export const forgotPassword = async (formData: ForgotPasswordPayload) => {
+  const response = await axiosInstance.post(
+    "/admin/auth/forgotPassword",
+    formData,
+  );
+  return response.data;
+};
+
 export const userVerify = async (formData: VerifyEmailPayload) => {
   const response = await axiosInstance.post("/admin/auth/VerifyEmail", formData);
   return response.data;
@@ -24,13 +32,7 @@ export const resendOtp = async (formData: ResendOtpPayload) => {
   return response.data;
 };
 
-export const forgotPassword = async (formData: ForgotPasswordPayload) => {
-  const response = await axiosInstance.post(
-    "/admin/auth/forgotPassword",
-    formData,
-  );
-  return response.data;
-};
+
 
 
 export const setPassword = async (

@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Button } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CustomInput from "@/components/input/CustomInput";
 
 interface ResetPasswordFormValues {
   password: string;
@@ -39,30 +40,24 @@ const ResetPassword: React.FC = () => {
         onFinish={onFinish}
         layout="vertical"
         autoComplete="off"
+        requiredMark={false}
         className="space-y-4"
       >
-        <Form.Item
-          label={<span className="text-gray-700 font-medium">New Password</span>}
+        <CustomInput
           name="password"
-          rules={[
-            { required: true, message: "Please enter new password!" },
-            { min: 6, message: "Password must be at least 6 characters!" },
-          ]}
+          label="New Password"
+          type="password"
+          placeholder="Enter new password"
+          icon={<LockOutlined />}
           hasFeedback
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="Enter new password"
-            size="large"
-            className="rounded-lg"
-          />
-        </Form.Item>
+        />
 
-        <Form.Item
-          label={
-            <span className="text-gray-700 font-medium">Confirm Password</span>
-          }
+        <CustomInput
           name="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          placeholder="Confirm new password"
+          icon={<LockOutlined />}
           dependencies={["password"]}
           hasFeedback
           rules={[
@@ -76,14 +71,7 @@ const ResetPassword: React.FC = () => {
               },
             }),
           ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="Confirm new password"
-            size="large"
-            className="rounded-lg"
-          />
-        </Form.Item>
+        />
 
         <Form.Item className="mb-0">
           <Button
@@ -99,7 +87,10 @@ const ResetPassword: React.FC = () => {
       </Form>
 
       <div className="mt-6 text-center">
-        <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-medium">
+        <Link
+          href="/auth/login"
+          className="text-blue-600 hover:text-blue-700 font-medium"
+        >
           Back to Login
         </Link>
       </div>
