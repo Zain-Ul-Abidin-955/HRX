@@ -37,7 +37,6 @@ const Login: React.FC = () => {
             message.error("Login failed: role not found in response.");
             return;
           }
-
           if (role === "superadmin") {
             router.push("/superadmin/dashboard");
           } else if (

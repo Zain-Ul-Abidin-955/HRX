@@ -28,9 +28,9 @@ const LogoutModal: React.FC<LogoutModalProps> = ({
       okText="Logout"
       cancelText="Cancel"
       okButtonProps={{
-        danger: true,
         size: "large",
         icon: <LogoutOutlined />,
+        className: "!bg-primaryColor !text-white !border-primaryColor hover:!bg-primaryColor/90",
       }}
       cancelButtonProps={{
         size: "large",

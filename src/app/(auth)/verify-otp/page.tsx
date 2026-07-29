@@ -18,11 +18,10 @@ const VerifyOtp: React.FC = () => {
 
   const onFinish = (values: VerifyOtpFormValues) => {
     setLoading(true);
-    localStorage.setItem("verifiedOtp", values.otp);
-
+    localStorage.setItem("otp", values.otp);
     setTimeout(() => {
       setLoading(false);
-      router.push("/auth/reset-password");
+      router.push("/reset-password");
     }, 1000);
   };
 
@@ -73,7 +72,7 @@ const VerifyOtp: React.FC = () => {
 
       <div className="mt-6 text-center">
         <Link
-          href="/auth/forgot-password"
+          href="/forgot-password"
           className="text-blue-600 hover:text-blue-700 font-medium"
         >
           Resend OTP

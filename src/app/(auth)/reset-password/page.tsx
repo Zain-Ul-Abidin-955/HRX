@@ -1,10 +1,13 @@
 "use client";
 
 import React from "react";
-import { Form, Button } from "antd";
+import { Form, Button, message } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import { resetPassword } from "@/api/collection/auth";
 import CustomInput from "@/components/input/CustomInput";
 
 interface ResetPasswordFormValues {
@@ -13,18 +16,44 @@ interface ResetPasswordFormValues {
 }
 
 const ResetPassword: React.FC = () => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = React.useState(false);
+  const [form] = Form.useForm<ResetPasswordFormValues>();
   const router = useRouter();
 
-  const onFinish = () => {
-    setLoading(true);
+  const { mutate: submitReset, isPending } = useMutation({
+    mutationFn: resetPassword,
+  });
 
-    setTimeout(() => {
-      setLoading(false);
-      localStorage.removeItem("verifiedOtp");
-      router.push("/auth/login");
-    }, 1000);
+  const onFinish = (values: ResetPasswordFormValues) => {
+    const email = localStorage.getItem("email");
+    const otp = localStorage.getItem("otp");
+
+    if (!email || !otp) {
+      message.error("Reset session expired. Please request a new OTP.");
+      router.push("/forgot-password");
+      return;
+    }
+
+    submitReset(
+      {
+        email,
+        otp,
+        password: values.password,
+      },
+      {
+        onSuccess: (data) => {
+          localStorage.clear();
+          message.success(data.message ?? "Password reset successfully.");
+          router.push("/login");
+        },
+        onError: (error) => {
+          const errorMessage = isAxiosError(error)
+            ? (error.response?.data as { detail?: string })?.detail ||
+              "Failed to reset password. Please try again."
+            : "Failed to reset password. Please try again.";
+          message.error(errorMessage);
+        },
+      },
+    );
   };
 
   return (
@@ -78,17 +107,17 @@ const ResetPassword: React.FC = () => {
             type="primary"
             htmlType="submit"
             size="large"
-            loading={loading}
+            loading={isPending}
             className="w-full !bg-primaryColor border-0 rounded-lg h-12 font-medium"
           >
-            {loading ? "Updating..." : "Update Password"}
+            {isPending ? "Updating..." : "Update Password"}
           </Button>
         </Form.Item>
       </Form>
 
       <div className="mt-6 text-center">
         <Link
-          href="/auth/login"
+          href="/login"
           className="text-blue-600 hover:text-blue-700 font-medium"
         >
           Back to Login

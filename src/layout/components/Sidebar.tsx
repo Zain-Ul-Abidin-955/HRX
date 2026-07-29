@@ -13,19 +13,25 @@ import {
   SettingOutlined,
   LogoutOutlined,
   BankOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
 import LogoutModal from "@/components/modal/LogoutModal";
 import type { AppRole } from "@/layout/Layout";
 import useUserStore from "@/store/userStore";
 
-
-interface SidebarItem {
+interface SidebarChildItem {
   name: string;
-  icon: React.ReactNode;
   link: string;
   paths: string[];
 }
 
+interface SidebarItem {
+  name: string;
+  icon: React.ReactNode;
+  link?: string;
+  paths: string[];
+  children?: SidebarChildItem[];
+}
 
 const SIDEBAR_BY_ROLE: Record<AppRole, SidebarItem[]> = {
   superadmin: [
@@ -38,8 +44,22 @@ const SIDEBAR_BY_ROLE: Record<AppRole, SidebarItem[]> = {
     {
       name: "Organizations",
       icon: <BankOutlined />,
-      link: "/superadmin/organization",
-      paths: ["/superadmin/organization"],
+      paths: [
+        "/superadmin/organization/applications",
+        "/superadmin/organization/lists",
+      ],
+      children: [
+        {
+          name: "Application",
+          link: "/superadmin/organization/applications",
+          paths: ["/superadmin/organization/applications"],
+        },
+        {
+          name: "List",
+          link: "/superadmin/organization/lists",
+          paths: ["/superadmin/organization/lists"],
+        },
+      ],
     },
     {
       name: "Settings",
@@ -48,6 +68,7 @@ const SIDEBAR_BY_ROLE: Record<AppRole, SidebarItem[]> = {
       paths: ["/superadmin/settings"],
     },
   ],
+
   org_admin: [
     {
       name: "Dashboard",
@@ -109,13 +130,34 @@ const Sidebar: React.FC<SidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const user = useUserStore((state) => state.user);
   const clearUser = useUserStore((state) => state.clearUser);
   const orgName = user?.organization?.name;
 
-  const isActiveRoute = (item: SidebarItem): boolean => {
-    return item.paths.some((path) => pathname === path);
+  const isActiveRoute = (paths: string[]): boolean => {
+    return paths.some((path) => pathname === path);
+  };
+
+  const isParentActive = (item: SidebarItem): boolean => {
+    return item.paths.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    );
+  };
+
+  const isMenuOpen = (item: SidebarItem): boolean => {
+    if (openMenus[item.name] !== undefined) {
+      return openMenus[item.name];
+    }
+    return isParentActive(item);
+  };
+
+  const toggleMenu = (item: SidebarItem) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [item.name]: !isMenuOpen(item),
+    }));
   };
 
   const showLogoutModal = () => {
@@ -133,26 +175,82 @@ const Sidebar: React.FC<SidebarProps> = ({
     setIsLogoutModalOpen(false);
   };
 
-  const linkContent = (item: SidebarItem) => (
-    <>
-      <span className="text-xl shrink-0">{item.icon}</span>
-      {!isCollapsed && <span className="font-medium text-sm">{item.name}</span>}
-    </>
-  );
+  const renderParentButton = (item: SidebarItem, isOpen: boolean) => {
+    const active = isParentActive(item);
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          if (isCollapsed) {
+            router.push(item.children?.[0]?.link ?? "#");
+            onNavigate?.();
+            return;
+          }
+          toggleMenu(item);
+        }}
+        className={`w-full flex items-center rounded-lg transition-all duration-200 ${isCollapsed ? "justify-center px-3 py-3" : "justify-between px-4 py-3"
+          } ${active
+            ? "bg-primaryColor text-white shadow-md"
+            : "text-primaryColor hover:bg-gray-100 hover:text-primaryColor"
+          }`}
+      >
+        <span className={`flex items-center ${isCollapsed ? "" : "space-x-3"}`}>
+          <span className="text-xl shrink-0">{item.icon}</span>
+          {!isCollapsed && (
+            <span className="font-medium text-sm">{item.name}</span>
+          )}
+        </span>
+        {!isCollapsed && (
+          <DownOutlined
+            className={`text-xs text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-0" : "-rotate-90"
+              }`}
+          />
+        )}
+      </button>
+    );
+  };
+
+  const renderChildren = (item: SidebarItem, isOpen: boolean) => {
+    if (!item.children?.length || isCollapsed || !isOpen) return null;
+
+    return (
+      <ul className="mt-1 ml-7 border-l border-gray-200 pl-3 space-y-1">
+        {item.children.map((child) => {
+          const childActive = isActiveRoute(child.paths);
+
+          return (
+            <li key={child.link}>
+              <Link
+                href={child.link}
+                onClick={onNavigate}
+                className={`block rounded-md px-3 py-2 mt-2 text-sm transition-colors ${childActive
+                    ? "!bg-gray-100 !text-primaryColor font-medium"
+                    : "!text-primaryColor hover:!bg-gray-100 hover:!text-primaryColor"
+                  }`}
+              >
+                {child.name}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
 
   return (
     <div className="h-full bg-white border-r border-gray-200 w-full flex flex-col">
-      {/* Logo Section */}
       <div
         className={`text-center border-b border-gray-200 flex flex-col items-center justify-center ${isCollapsed ? "py-6 px-2" : "py-6 px-4"
           }`}
       >
         <div
-          className={`flex items-center ${isCollapsed ? "justify-center" : "justify-center space-x-2"}`}
+          className={`flex items-center ${isCollapsed ? "justify-center" : "justify-center space-x-2"
+            }`}
         >
-          <RobotOutlined className="text-3xl text-blue-600 shrink-0" />
+          <RobotOutlined className="text-3xl text-primaryColor  shrink-0" />
           {!isCollapsed && (
-            <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-linear-to-r from-primaryColor to-primaryColor bg-clip-text text-transparent">
               HRX AI
             </span>
           )}
@@ -164,39 +262,62 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      {/* Sidebar Items */}
       <div className="flex-1 py-6 overflow-y-auto">
         <ul className={`space-y-2 ${isCollapsed ? "px-2" : "px-3"}`}>
-          {sidebarItems.map((item, index) => (
-            <li key={index}>
-              <Tooltip
-                title={item.name}
-                placement="right"
-                trigger="hover"
-                open={isCollapsed ? undefined : false}
-              >
-                <Link
-                  href={item.link}
-                  onClick={onNavigate}
-                  className={`flex items-center rounded-lg transition-all duration-200 ${isCollapsed
-                    ? "justify-center px-3 py-3"
-                    : "space-x-3 px-4 py-3"
-                    } ${isActiveRoute(item)
-                      ? "!bg-primaryColor !text-white shadow-md"
-                      : "!text-gray-700 hover:!bg-gray-100 hover:!text-primaryColor"
-                    }`}
+          {sidebarItems.map((item) => {
+            const hasChildren = Boolean(item.children?.length);
+            const isOpen = isMenuOpen(item);
+
+            if (hasChildren) {
+              return (
+                <li key={item.name}>
+                  <Tooltip
+                    title={item.name}
+                    placement="right"
+                    trigger="hover"
+                    open={isCollapsed ? undefined : false}
+                  >
+                    {renderParentButton(item, isOpen)}
+                  </Tooltip>
+                  {renderChildren(item, isOpen)}
+                </li>
+              );
+            }
+
+            return (
+              <li key={item.name}>
+                <Tooltip
+                  title={item.name}
+                  placement="right"
+                  trigger="hover"
+                  open={isCollapsed ? undefined : false}
                 >
-                  {linkContent(item)}
-                </Link>
-              </Tooltip>
-            </li>
-          ))}
+                  <Link
+                    href={item.link ?? "#"}
+                    onClick={onNavigate}
+                    className={`flex items-center rounded-lg transition-all duration-200 ${isCollapsed
+                        ? "justify-center px-3 py-3"
+                        : "space-x-3 px-4 py-3"
+                      } ${isActiveRoute(item.paths)
+                        ? "!bg-primaryColor !text-white shadow-md"
+                        : "!text-primaryColor hover:!bg-gray-100 hover:!text-primaryColor"
+                      }`}
+                  >
+                    <span className="text-xl shrink-0">{item.icon}</span>
+                    {!isCollapsed && (
+                      <span className="font-medium text-sm">{item.name}</span>
+                    )}
+                  </Link>
+                </Tooltip>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
-      {/* Footer Section */}
       <div
-        className={`border-t border-gray-200 space-y-3 ${isCollapsed ? "p-2" : "p-4"}`}
+        className={`border-t border-gray-200 space-y-3 ${isCollapsed ? "p-2" : "p-4"
+          }`}
       >
         <Tooltip
           title="Logout"
@@ -206,7 +327,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <button
             onClick={showLogoutModal}
-            className={`w-full flex items-center rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200 ${isCollapsed ? "justify-center px-3 py-3" : "space-x-3 px-4 py-3"
+            className={`w-full flex items-center rounded-lg text-primaryColor hover:bg-gray-100 transition-all duration-200 ${isCollapsed
+                ? "justify-center px-3 py-3"
+                : "space-x-3 px-4 py-3"
               }`}
           >
             <LogoutOutlined className="text-xl shrink-0" />
@@ -217,7 +340,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         </Tooltip>
       </div>
 
-      {/* Logout Modal */}
       <LogoutModal
         open={isLogoutModalOpen}
         onConfirm={handleLogout}
