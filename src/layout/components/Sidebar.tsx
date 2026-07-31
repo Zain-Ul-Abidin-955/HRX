@@ -15,9 +15,10 @@ import {
   BankOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-import LogoutModal from "@/components/modal/LogoutModal";
+import LogoutModal from "@/components/modal/MyModal";
 import type { AppRole } from "@/layout/Layout";
 import useUserStore from "@/store/userStore";
+import MyModal from "@/components/modal/MyModal";
 
 interface SidebarChildItem {
   name: string;
@@ -340,7 +341,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </Tooltip>
       </div>
 
-      <LogoutModal
+      <MyModal
         open={isLogoutModalOpen}
         onConfirm={handleLogout}
         onCancel={handleCancelLogout}

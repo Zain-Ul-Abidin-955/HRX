@@ -1,23 +1,31 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Select, Tag, message } from "antd";
-import { MailOutlined, GlobalOutlined } from "@ant-design/icons";
+import {
+  MailOutlined,
+  GlobalOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import MyTable from "@/components/table/MyTable";
 import { LoadingSpinner } from "@/components/loader/Loading";
+import MyModal from "@/components/modal/MyModal";
 import {
   getOrganizationsApplications,
-  updateOrganizationApplicationStatus,
+  approveOrganizationApplication,
+  rejectOrganizationApplication,
 } from "@/api/collection/organizations";
 import type { OrganizationApplicationRow } from "@/types/organization";
+
+type PendingAction = "approved" | "rejected";
 
 function getStatusColor(status: string) {
   const normalized = status.toLowerCase();
   if (normalized === "approved") return "green";
-  if (normalized === "pending") return "orange";
   if (normalized === "rejected") return "red";
   return "default";
 }
@@ -33,22 +41,48 @@ interface StatusDropdownProps {
 const StatusDropdown: React.FC<StatusDropdownProps> = ({ record }) => {
   const queryClient = useQueryClient();
   const normalizedStatus = record.status.toLowerCase();
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(
+    null,
+  );
 
-  const { mutate: updateStatus, isPending } = useMutation({
-    mutationFn: (status: "approved" | "rejected") =>
-      updateOrganizationApplicationStatus(record.id, status),
+  const { mutate: approveOrg, isPending: isApproving } = useMutation({
+    mutationFn: () => approveOrganizationApplication(record.id),
     onSuccess: () => {
-      message.success("Organization status updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["organizations-applications"] });
+      message.success("Organization approved successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["organizations-applications"],
+      });
+      setPendingAction(null);
     },
     onError: (error) => {
       const errorMessage = isAxiosError(error)
         ? (error.response?.data as { message?: string })?.message ||
-          "Failed to update organization status."
-        : "Failed to update organization status.";
+          "Failed to approve organization."
+        : "Failed to approve organization.";
       message.error(errorMessage);
     },
   });
+
+  const { mutate: rejectOrg, isPending: isRejecting } = useMutation({
+    mutationFn: () => rejectOrganizationApplication(record.id),
+    onSuccess: () => {
+      message.success("Organization rejected successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["organizations-applications"],
+      });
+      setPendingAction(null);
+    },
+    onError: (error) => {
+      const errorMessage = isAxiosError(error)
+        ? (error.response?.data as { message?: string })?.message ||
+          "Failed to reject organization."
+        : "Failed to reject organization.";
+      message.error(errorMessage);
+    },
+  });
+
+  const isPending = isApproving || isRejecting;
+  const isApprove = pendingAction === "approved";
 
   if (normalizedStatus !== "pending") {
     return (
@@ -59,22 +93,50 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ record }) => {
   }
 
   return (
-    <Select
-      value="pending"
-      loading={isPending}
-      disabled={isPending}
-      className="min-w-[140px] capitalize"
-      options={[
-        { label: "Pending", value: "pending" },
-        { label: "Approve", value: "approved" },
-        { label: "Reject", value: "rejected" },
-      ]}
-      onChange={(value: "pending" | "approved" | "rejected") => {
-        if (value === "approved" || value === "rejected") {
-          updateStatus(value);
+    <>
+      <Select
+        value="pending"
+        loading={isPending}
+        disabled={isPending}
+        className="min-w-[140px] capitalize"
+        options={[
+          { label: "Approve", value: "approved" },
+          { label: "Reject", value: "rejected" },
+        ]}
+        onChange={(value: PendingAction) => {
+          if (value === "approved" || value === "rejected") {
+            setPendingAction(value);
+          }
+        }}
+      />
+
+      <MyModal
+        open={pendingAction != null}
+        onConfirm={() => {
+          if (pendingAction === "approved") approveOrg();
+          if (pendingAction === "rejected") rejectOrg();
+        }}
+        onCancel={() => {
+          if (!isPending) setPendingAction(null);
+        }}
+        title={isApprove ? "Confirm Approval" : "Confirm Rejection"}
+        description={
+          isApprove
+            ? `Are you sure you want to approve "${record.org_name}"?`
+            : `Are you sure you want to reject "${record.org_name}"?`
         }
-      }}
-    />
+        subDescription={
+          isApprove
+            ? "The organization will be approved and can access the platform."
+            : "The organization application will be discarded."
+        }
+        okText={isApprove ? "Approve" : "Reject"}
+        cancelText="Cancel"
+        okIcon={isApprove ? <CheckOutlined /> : <CloseOutlined />}
+        confirmLoading={isPending}
+        danger={!isApprove}
+      />
+    </>
   );
 };
 
@@ -178,13 +240,13 @@ const OrganizationPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">Organizations</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Applications</h1>
         <p className="text-gray-600 mt-1">Manage organization applications</p>
       </div>
 
       <MyTable<OrganizationApplicationRow>
-        title="All Organizations"
-        searchPlaceholder="Search organizations..."
+        title="All Applications"
+        searchPlaceholder="Search applications..."
         columns={columns}
         dataSource={tableData}
         loading={isLoading}
@@ -193,8 +255,8 @@ const OrganizationPage: React.FC = () => {
         scroll={{ x: 1000 }}
         locale={{
           emptyText: isError
-            ? "Failed to load organizations. Please try again."
-            : "No organizations found",
+            ? "Failed to load applications. Please try again."
+            : "No applications found",
         }}
       />
     </div>

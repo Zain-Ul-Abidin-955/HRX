@@ -11,7 +11,7 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import LogoutModal from "@/components/modal/LogoutModal";
+import LogoutModal from "@/components/modal/MyModal";
 import type { AppRole } from "@/layout/Layout";
 import useUserStore from "@/store/userStore";
 
